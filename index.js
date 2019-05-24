@@ -15,7 +15,7 @@ const quizzes = [
     a: "Lion",
     b: "Tiger",
     c: "Jaguar",
-    answer: "a",
+    answer: "b",
     correct: 0,
     incorrect: 0
   },
