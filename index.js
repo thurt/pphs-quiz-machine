@@ -1,8 +1,10 @@
 const express = require("express");
 const cors = require("cors");
+const multer = require("multer");
 const port = process.env.PORT || 3000;
 
 const app = express();
+const upload = multer();
 
 //app.use(express.static("./public"));
 app.use(cors());
@@ -43,7 +45,7 @@ app.get("/quizzes", (req, res) => {
   res.json(quizList);
 });
 
-app.post("/quizzes", (req, res) => {
+app.post("/quizzes", upload.none(), (req, res) => {
   if (
     !req.body.question ||
     !req.body.a ||
@@ -51,13 +53,28 @@ app.post("/quizzes", (req, res) => {
     !req.body.c ||
     !req.body.answer
   ) {
-    res.status(400).send();
+    res
+      .status(400)
+      .send(
+        "Missing one or more required properties: question, a, b, c, answer"
+      );
+    return;
+  }
+
+  if (
+    req.body.answer !== "a" &&
+    req.body.answer !== "b" &&
+    req.body.answer !== "c"
+  ) {
+    res.status(400).send("Answer must be one of a, b, or c");
     return;
   }
 
   req.body.id = quizzes.length;
+  req.body.correct = 0;
+  req.body.incorrect = 0;
   quizzes.push(req.body);
-  res.status(201).send();
+  res.status(201).send("You quiz question was successfully submitted!");
 });
 
 app.get("/quizzes/:quizId", (req, res) => {
